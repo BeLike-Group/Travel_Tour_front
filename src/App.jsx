@@ -22,6 +22,7 @@ import TravelP from "./components/Passenger/TravelP";
 import HotelP from "./components/Passenger/HotelP";
 import DetailsP from "./components/Passenger/DetailsP";
 // import axios from "axios";
+import BookingSummary from './components/Passenger/BookingSummary';
 
 function App() {
   // Add connect to Backend
@@ -171,6 +172,8 @@ function App() {
           <Route path="Hotel" element={<HotelProfile />} />
           <Route path="RootesT" element={<RoomH />} />
         </Route>
+        <Route path="/booking-summary" element={<BookingSummary />} />
+
         {/* Passenger Dashboard  */}
         <Route path="/DashboardPassenger/*" element={<DashBoardPassenger />}>
           <Route path="passenger" element={<PassengerProfile />} />

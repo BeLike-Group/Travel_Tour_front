@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import NavbarminiP from "./NavbarminiP";
 import {
   getUserProfile,
@@ -22,7 +21,6 @@ export default function PassengerProfile() {
   const [loading, setLoading] = useState(false); // To handle loading state
   const [message, setMessage] = useState(null); // To display success/error messages
 
-  // Fetch profile data on component mount
   useEffect(() => {
     async function fetchProfileData() {
       try {
@@ -36,11 +34,8 @@ export default function PassengerProfile() {
     fetchProfileData();
   }, []);
 
-  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    // Check if the field is inside the contactInfo object
     if (["email", "phone", "address"].includes(name)) {
       setProfileData((prevData) => ({
         ...prevData,
@@ -57,14 +52,13 @@ export default function PassengerProfile() {
     }
   };
 
-  // Form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMessage(null);
 
     try {
-      const updatedProfile = await updateUserProfile(profileData); // Call the update function
+      const updatedProfile = await updateUserProfile(profileData);
       setProfileData(updatedProfile.data); // Update the state with the new data
       setMessage("Profile updated successfully!");
     } catch (error) {
@@ -76,101 +70,115 @@ export default function PassengerProfile() {
   };
 
   return (
-    <div className="bg-slate-950 h-fit">
-      {/* ----------------------------------nav--------------------------------- */}
+    <div className="min-h-screen bg-gradient-to-br from-gray-800 via-black to-gray-900 text-white">
+      {/* Navbar */}
       <NavbarminiP name="Passenger Profile" />
-      <form
-        className="p-5 m-auto pt-5 w-fit max-w-fit backdrop-blur-sm bg-white/10 py-10 shadow-lg shadow-black text-white rounded-md focus:outline-none focus:ring-2 placeholder-white"
-        onSubmit={handleSubmit}
-      >
-        <div className="flex flex-col md:flex-row gap-16 justify-center mt-5 px-12 py-8">
-          <div className="flex-1">
-            <input
-              type="text"
-              name="username"
-              value={profileData.username}
-              placeholder="Username"
-              onChange={handleChange}
-              className="w-full bg-transparent px-4 py-2 shadow-sm shadow-black text-white rounded-md focus:outline-none focus:ring-2 placeholder-white"
-            />
+
+      <div className="flex flex-col items-center py-10 px-6">
+        <form
+          className="w-full max-w-3xl bg-gray-800 rounded-lg shadow-lg p-8 space-y-6"
+          onSubmit={handleSubmit}
+        >
+          <h2 className="text-2xl font-semibold text-center mb-4">Edit Profile</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Username */}
+            <div>
+              <label className="block mb-2 text-sm font-medium">Username</label>
+              <input
+                type="text"
+                name="username"
+                value={profileData.username}
+                onChange={handleChange}
+                placeholder="Enter your username"
+                className="w-full px-4 py-2 rounded-md bg-gray-700 text-white focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Password */}
+            <div>
+              <label className="block mb-2 text-sm font-medium">Password</label>
+              <input
+                type="password"
+                name="password"
+                value={profileData.password}
+                onChange={handleChange}
+                placeholder="Enter your password"
+                className="w-full px-4 py-2 rounded-md bg-gray-700 text-white focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Email */}
+            <div>
+              <label className="block mb-2 text-sm font-medium">Email</label>
+              <input
+                type="email"
+                name="email"
+                value={profileData.contactInfo.email}
+                onChange={handleChange}
+                placeholder="Enter your email"
+                className="w-full px-4 py-2 rounded-md bg-gray-700 text-white focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Role */}
+            <div>
+              <label className="block mb-2 text-sm font-medium">Role</label>
+              <input
+                type="text"
+                name="role"
+                value={profileData.role}
+                onChange={handleChange}
+                placeholder="Enter your role"
+                className="w-full px-4 py-2 rounded-md bg-gray-700 text-white focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Phone */}
+            <div>
+              <label className="block mb-2 text-sm font-medium">Phone</label>
+              <input
+                type="text"
+                name="phone"
+                value={profileData.contactInfo.phone}
+                onChange={handleChange}
+                placeholder="Enter your phone number"
+                className="w-full px-4 py-2 rounded-md bg-gray-700 text-white focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Address */}
+            <div>
+              <label className="block mb-2 text-sm font-medium">Address</label>
+              <input
+                type="text"
+                name="address"
+                value={profileData.contactInfo.address}
+                onChange={handleChange}
+                placeholder="Enter your address"
+                className="w-full px-4 py-2 rounded-md bg-gray-700 text-white focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
           </div>
-  
-          <div className="flex-1">
-            <input
-              type="password"
-              name="password"
-              value={profileData.password}
-              placeholder="Password"
-              onChange={handleChange}
-              className="w-full bg-transparent px-4 py-2 shadow-sm shadow-black text-white rounded-md focus:outline-none focus:ring-2 placeholder-white"
-            />
+
+          {/* Submit Button */}
+          <div className="text-center">
+            <button
+              type="submit"
+              className="px-6 py-2 rounded-md bg-blue-600 hover:bg-blue-700 transition duration-300"
+              disabled={loading}
+            >
+              {loading ? "Updating..." : "Update Profile"}
+            </button>
           </div>
-        </div>
-  
-        <div className="flex flex-col md:flex-row gap-16 justify-center mt-5 px-12 py-8">
-          <div className="flex-1">
-            <input
-              type="email"
-              name="email"
-              placeholder="Email"
-              value={profileData.contactInfo.email}
-              onChange={handleChange}
-              className="w-full bg-transparent px-4 py-2 shadow-sm shadow-black text-white rounded-md focus:outline-none focus:ring-2 placeholder-white"
-            />
-          </div>
-  
-          <div className="flex-1">
-            <input
-              type="text"
-              name="role"
-              placeholder="Role"
-              value={profileData.role}
-              onChange={handleChange}
-              className="w-full bg-transparent px-4 py-2 shadow-sm shadow-black text-white rounded-md focus:outline-none focus:ring-2 placeholder-white"
-            />
-          </div>
-        </div>
-  
-        <div className="flex flex-col md:flex-row gap-16 justify-center mt-5 px-12 py-8">
-          <div className="flex-1">
-            <input
-              type="text"
-              name="phone"
-              placeholder="Phone"
-              value={profileData.contactInfo.phone}
-              onChange={handleChange}
-              className="w-full bg-transparent px-4 py-2 shadow-sm shadow-black text-white rounded-md focus:outline-none focus:ring-2 placeholder-white"
-            />
-          </div>
-  
-          <div className="flex-1">
-            <input
-              type="text"
-              name="address"
-              placeholder="Address"
-              value={profileData.contactInfo.address}
-              onChange={handleChange}
-              className="w-full bg-transparent px-4 py-2 shadow-sm shadow-black text-white rounded-md focus:outline-none focus:ring-2 placeholder-white"
-            />
-          </div>
-        </div>
-  
-        <div className="flex justify-center mt-5">
-          <button
-            type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
-            disabled={loading}
-          >
-            {loading ? "Updating..." : "Update Profile"}
-          </button>
-        </div>
-  
-        {message && (
-          <div className="text-center mt-4 text-sm text-yellow-400">
-            {message}
-          </div>
-        )}
-      </form>
+
+          {/* Message */}
+          {message && (
+            <div className="text-center mt-4 text-sm text-yellow-400">
+              {message}
+            </div>
+          )}
+        </form>
+      </div>
     </div>
   );
 }

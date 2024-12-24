@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import NavbarminiP from "./NavbarminiP";
 import { getAllHotels } from "../../backend-services/bookingServices";
+import { FaHotel, FaPhone, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
 
 export default function HotelP() {
   const [hotels, setHotels] = useState([]); // State for storing hotel data
@@ -11,15 +12,13 @@ export default function HotelP() {
   useEffect(() => {
     const fetchHotels = async () => {
       try {
-        const response = await getAllHotels(); // Fetch hotel data from API
+        const response = await getAllHotels();
         console.log("API Response:", response);
 
-        // Check if response.data is an array or a single object
         if (Array.isArray(response.data)) {
           setHotels(response.data); // Set directly if it's an array
         } else {
-          // Wrap the single object in an array for consistent handling
-          setHotels([response.data]);
+          setHotels([response.data]); // Wrap the single object in an array
         }
       } catch (error) {
         console.error("Failed to fetch hotels:", error.message);
@@ -30,56 +29,58 @@ export default function HotelP() {
   }, []);
 
   return (
-    <div className="bg-slate-950">
+    <div className="bg-gradient-to-br from-gray-800 via-black to-gray-900 min-h-screen text-white">
       {/* Navbar */}
-      <NavbarminiP name="Hotel" />
+      <NavbarminiP name="Hotels" />
 
       {/* Main Body */}
-      <div
-        style={{
-          scrollbarWidth: "none", // Firefox
-          msOverflowStyle: "none", // IE 10+
-        }}
-        className="p-5 m-auto overflow-auto h-[30rem] pt-[5rem] w-fit px-20 backdrop-blur-sm bg-white/10 py-24 shadow-lg shadow-black text-white rounded-md"
-      >
-        {/* Render Hotel Buttons */}
-        <div className="lg:flex flex-wrap gap-8 justify-center">
+      <div className="container mx-auto px-6 py-8">
+        <h1 className="text-3xl font-bold text-center mb-8">
+          <FaHotel className="inline text-blue-500 mr-2" />
+          Available Hotels
+        </h1>
+
+        {/* Hotel Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {hotels.length > 0 ? (
             hotels.map((hotel) => (
               <div
-                key={hotel._id} // Use a unique key
+                key={hotel._id}
                 role="button"
                 aria-label={`Navigate to ${hotel.username || hotel.name}`}
-                // onClick={() => navigate(`/hotelDetails/${hotel._id}`)} // Corrected navigation path
                 onClick={() =>
                   hotel.username
                     ? navigate(hotel.username.replace(/\s+/g, ""))
                     : console.error("Invalid hotel username")
                 }
-                className="text-center p-2 bg-transparent rounded-2xl cursor-pointer shadow-sm shadow-black/50 hover:shadow-black"
+                className="p-6 bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition cursor-pointer"
               >
-                <p className="text-sm">Name: {hotel.username || hotel.name}</p>{" "}
-                {/* Display username or name */}
-                <p className="text-xs">
-                  Phone No: {hotel.contactInfo?.phone || "No phone"}
-                </p>{" "}
-                {/* Display phone number */}
-                <p className="text-xs">
-                  Email: {hotel.contactInfo?.email || "No email"}
-                </p>{" "}
-                {/* Display email */}
-                <p className="text-xs">
-                  Address: {hotel.contactInfo?.address || "No Address"}
-                </p>{" "}
-                {/* Display address */}
+                <h2 className="text-xl font-semibold mb-2">
+                  <FaHotel className="inline text-green-500 mr-2" />
+                  {hotel.username || hotel.name}
+                </h2>
+                <ul className="text-sm space-y-2">
+                  <li>
+                    <FaPhone className="inline text-blue-500 mr-2" />
+                    {hotel.contactInfo?.phone || "No phone"}
+                  </li>
+                  <li>
+                    <FaEnvelope className="inline text-yellow-500 mr-2" />
+                    {hotel.contactInfo?.email || "No email"}
+                  </li>
+                  <li>
+                    <FaMapMarkerAlt className="inline text-red-500 mr-2" />
+                    {hotel.contactInfo?.address || "No Address"}
+                  </li>
+                </ul>
               </div>
             ))
           ) : (
-            <p className="text-center text-white">No hotels available.</p>
+            <p className="text-center text-gray-400">No hotels available.</p>
           )}
         </div>
 
-        {/* Render the nested routes */}
+        {/* Nested Routes */}
         <Outlet />
       </div>
     </div>

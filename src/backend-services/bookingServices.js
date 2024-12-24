@@ -1,11 +1,54 @@
 import api from "../app"; // Import Axios instance for API calls
 
 /**
+ * 
+ * 
  * Create a new booking (Done)
  * @param {Object} bookingData - Data for the new booking
  * @returns {Promise<Object>} - Created booking details
  */
-export const createBooking = async (userId, serviceType, serviceId, status) => {
+
+export const updateSeatAvailability = async (routeId, seatNumbers) => {
+  try {
+    const token =
+      localStorage.getItem("authToken") || sessionStorage.getItem("authToken");
+
+    if (!token) {
+      throw new Error("You are not authorized to perform this action. Please log in again.");
+    }
+
+    const response = await api.patch(
+      `/api/v1/routeCompany/update-seat-availability/${routeId}`,
+      { seatNumbers },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    console.log("Seat availability updated successfully:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating seat availability:", error);
+    throw error;
+  }
+};
+
+/**
+ * 
+ * 
+ * Create a new booking (Done)
+ * @param {Object} bookingData - Data for the new booking
+ * @returns {Promise<Object>} - Created booking details
+ */
+ export const createBooking = async (
+  userId,
+  serviceType,
+  serviceId,
+  status,
+  additionalData = {}
+) => {
   try {
     const token =
       localStorage.getItem("authToken") || sessionStorage.getItem("authToken");
@@ -16,7 +59,7 @@ export const createBooking = async (userId, serviceType, serviceId, status) => {
       );
     }
 
-    // Check if the serviceType is valid
+    // Validate service type
     if (!["Bus", "Hotel"].includes(serviceType)) {
       throw new Error("Invalid serviceType. Allowed values: Bus, Hotel");
     }
@@ -26,12 +69,13 @@ export const createBooking = async (userId, serviceType, serviceId, status) => {
       serviceType,
       serviceId,
       status,
+      ...additionalData,
     });
 
-    // Make the API request with the URL params
+    // Make the API request, passing additional data in the body
     const { data } = await api.post(
       `/api/v1/booking/create-booking/${userId}/${serviceType}/${serviceId}`,
-      { status }, // status is still passed in the body
+      { status, ...additionalData },
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -334,7 +378,7 @@ export const getBookingById = async (bookingId) => {
  * @param {Object} updateData - Updated status for the booking
  * @returns {Promise<Object>} - Updated booking details
  */
-export const updateBookingStatus = async (bookingId, updateData) => {
+ export const updateBookingStatus = async (bookingId, updateData) => {
   try {
     const token =
       localStorage.getItem("authToken") || sessionStorage.getItem("authToken");
@@ -345,10 +389,11 @@ export const updateBookingStatus = async (bookingId, updateData) => {
 
     const { data } = await api.patch(
       `/api/v1/booking/update-booking/${bookingId}/status`,
-      updateData,
+      { status: updateData }, // Correctly sending the status field
       {
         headers: {
           Authorization: `Bearer ${token}`, // Include the token in headers
+          "Content-Type": "application/json",
         },
       }
     );

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Circular Diagram</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f4f7fa;
+    }
+
+    .diagram-container {
+      width: 500px;
+      height: 500px;
+      position: relative;
+      border-radius: 50%;
+      background: #e6eaf0;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Central Circle */
+    .center-circle {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: #fff;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      font-size: 14px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Arrows */
+    .arrow {
+      width: 80px;
+      height: 10px;
+      background: #4CAF50;
+      position: absolute;
+      transform-origin: center;
+      transform: rotate(0deg);
+    }
+
+    .arrow::after {
+      content: '';
+      position: absolute;
+      right: -10px;
+      top: -5px;
+      width: 0;
+      height: 0;
+      border-left: 10px solid #4CAF50;
+      border-top: 5px solid transparent;
+      border-bottom: 5px solid transparent;
+    }
+
+    .arrow1 { top: 20%; left: 50%; transform: translateX(-50%) rotate(0deg); }
+    .arrow2 { right: 10%; top: 50%; transform: translateY(-50%) rotate(90deg); }
+    .arrow3 { bottom: 20%; left: 50%; transform: translateX(-50%) rotate(180deg); }
+    .arrow4 { left: 10%; top: 50%; transform: translateY(-50%) rotate(270deg); }
+
+    /* Labels */
+    .label {
+      position: absolute;
+      font-size: 14px;
+      color: #333;
+      text-align: center;
+      width: 120px;
+    }
+
+    .label1 { top: 5%; left: 50%; transform: translateX(-50%); }
+    .label2 { right: 5%; top: 50%; transform: translateY(-50%); }
+    .label3 { bottom: 5%; left: 50%; transform: translateX(-50%); }
+    .label4 { left: 5%; top: 50%; transform: translateY(-50%); }
+
+    /* Inner Points */
+    .inner-point {
+      position: absolute;
+      font-size: 12px;
+      color: #555;
+      text-align: center;
+      width: 80px;
+    }
+
+    .point1 { top: 25%; left: 50%; transform: translateX(-50%); }
+    .point2 { right: 25%; top: 50%; transform: translateY(-50%); }
+    .point3 { bottom: 25%; left: 50%; transform: translateX(-50%); }
+    .point4 { left: 25%; top: 50%; transform: translateY(-50%); }
+  </style>
+</head>
+<body>
+  <div class="diagram-container">
+    <!-- Central Circle -->
+    <div class="center-circle">TH</div>
+
+    <!-- Arrows -->
+    <div class="arrow arrow1"></div>
+    <div class="arrow arrow2"></div>
+    <div class="arrow arrow3"></div>
+    <div class="arrow arrow4"></div>
+
+    <!-- Outer Labels -->
+    <div class="label label1">Cyber Risk Profiling</div>
+    <div class="label label2">Threat Data Collection</div>
+    <div class="label label3">Alerting and Reporting</div>
+    <div class="label label4">Continuous Risk Monitoring</div>
+
+    <!-- Inner Points -->
+    <div class="inner-point point1">Executives & Board</div>
+    <div class="inner-point point2">IT Operations</div>
+    <div class="inner-point point3">Legal</div>
+    <div class="inner-point point4">Fraud Department</div>
+  </div>
+</body>
+</html>

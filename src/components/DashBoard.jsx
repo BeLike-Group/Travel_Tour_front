@@ -1,49 +1,47 @@
 /* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { Routes, Route } from "react-router-dom";
 
 import backpic from "./Pics/Signuppics/signUpback3.jpg";
 import Sidebar from "../Sidebar";
 import AdminProfile from "./Admin/AdminProfile";
-import { Routes, Route } from "react-router-dom";
+import Booking from "./Admin/AdminBookings"
 import TravelCompany from "./Admin/TravelCompany";
 import Rootes from "./Admin/Rootes";
 import Hotels from "./Admin/Hotels";
 import Room from "./Admin/Room";
 import Passenger from "./Admin/Passenger";
-
 import Rootes_Room from "./Admin/Rootes_Room";
+// import Bookings from "./Admin/Bookings"; // Import Bookings Component
+
 export default function DashBoard() {
   return (
     <>
-    <div className="">
-{/* ----------------------------img background------------------- */}
-<div className="">
-        <img
-          src={backpic}
-          alt=""
-          className=" h-screen w-screen absolute opacity-1 "
-        />
-      </div>
-      {/* ---------------front------------------ */}
+      {/* Background Image */}
+      
+      {/* Main Container */}
       <div className="flex flex-col md:flex-row h-screen opacity-1">
-        {/* ----------------------------sidebar------------------------- */}
+        {/* Sidebar */}
         <Sidebar
           type="Admin"
           prp1="Travel Company"
-          // prp2="Routes"
           prp3="Hotels"
-          // prp4="Room"
-          prp5="Passenegers"
-          prp6="Logout"
+          prp5="Passengers"
+          prp6="Bookings" // Add Bookings Button
+          prp7="Logout"
         />
 
-        {/* -------------------------main Contanier---------------- */}
-        <div className="flex-1 ">
+        {/* Main Content */}
+        <div className="flex-1">
           <Routes>
             <Route path="admin" element={<AdminProfile />} />
+            <Route path="bookings" element={<Booking />} />
+
             <Route path="travelCompany" element={<TravelCompany />} />
             <Route path="rootes/*" element={<Rootes />}>
+
+
+              {/* Nested Routes for Rootes */}
               <Route
                 path="FaisalMovers"
                 element={
@@ -93,7 +91,7 @@ export default function DashBoard() {
                 element={
                   <Rootes_Room
                     cmpnyName="Q Connect"
-                    rt1="Lahore to vehari"
+                    rt1="Lahore to Vehari"
                     rt2="Burewala to Faisalabad"
                     rt3="Gaggo to Peshawar"
                   />
@@ -115,7 +113,7 @@ export default function DashBoard() {
                 element={
                   <Rootes_Room
                     cmpnyName="Waraich Express"
-                    rt1="Lahore to Sakhar"
+                    rt1="Lahore to Sukkur"
                     rt2="Lahore to Faisalabad"
                     rt3="Lahore to Peshawar"
                   />
@@ -124,6 +122,7 @@ export default function DashBoard() {
             </Route>
             <Route path="hotels" element={<Hotels />} />
             <Route path="rooms/*" element={<Room />}>
+              {/* Nested Routes for Rooms */}
               <Route
                 path="Hunza_Serena_Inn"
                 element={
@@ -203,11 +202,11 @@ export default function DashBoard() {
               />
             </Route>
             <Route path="passengers" element={<Passenger />} />
+            
+            {/* <Route path="bookings" element={<Bookings />} /> New Route */}
           </Routes>
         </div>
       </div>
-    </div>
-      
     </>
   );
 }

@@ -133,7 +133,7 @@ export default function TravelCompany() {
 return (
   <div className="bg-slate-950">
     <Navbarmini name="Travel Company" />
-    <div className="overflow-auto h-[30rem] m-auto pt-4 w-full md:w-fit px-2 md:px-24 backdrop-blur-sm bg-white/10 py-4 shadow-lg shadow-black text-white rounded-md">
+    <div className="overflow-auto h-screen m-auto  w-full md:w-fit px-2  backdrop-blur-sm bg-white/10  shadow-lg shadow-black text-white rounded-md">
       {/* Add Company Form */}
       <form onSubmit={handleSubmit}>
         <div className="flex flex-col md:flex-row lg:pt-8 min-[425px]:pt-1 lg:gap-[9rem] min-[425px]:gap-4 justify-center">

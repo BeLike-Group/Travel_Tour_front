@@ -11,10 +11,8 @@ export default function RootesP({ companyId, cmpnyName }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toISOString().split("T")[0];
-  };
+  const formatDate = (dateString) =>
+    dateString ? new Date(dateString).toISOString().split("T")[0] : "";
 
   const formatTime = (timeString) => {
     if (!timeString) return "Invalid Time";
@@ -47,9 +45,9 @@ export default function RootesP({ companyId, cmpnyName }) {
 
   useEffect(() => {
     const fetchRoutes = async () => {
-      setLoading(true); // Reset loading state for each fetch
-      setError(null); // Reset error state
-      setRoutes([]); // Clear previous routes
+      setLoading(true);
+      setError(null);
+      setRoutes([]);
 
       if (!companyId) {
         setError("Company ID is required to fetch routes.");
@@ -58,8 +56,7 @@ export default function RootesP({ companyId, cmpnyName }) {
       }
 
       try {
-        const response = await getAllCompanyRoutes(companyId); // Pass companyId to the API
-        console.log("API Response:", response);
+        const response = await getAllCompanyRoutes(companyId);
         const fetchedRoutes = response?.data || [];
         setRoutes(fetchedRoutes);
       } catch (err) {
@@ -71,53 +68,58 @@ export default function RootesP({ companyId, cmpnyName }) {
     };
 
     fetchRoutes();
-  }, [companyId]); // Re-run effect whenever companyId changes
+  }, [companyId]);
 
   return (
-    <div>
-      <div className="p-5 bg-transparent mt-16 m-auto w-fit px-6 text-white rounded-md">
-        <p className="text-center text-[1.4rem] font-semibold">
+    <div className="bg-gradient-to-br from-gray-800 via-black to-gray-900 min-h-screen text-white">
+      {/* Header */}
+      <div className="py-8 text-center">
+        <h1 className="text-3xl font-bold">
           Routes Available from {cmpnyName}
-        </p>
+        </h1>
+      </div>
+
+      {/* Main Content */}
+      <div className="container mx-auto px-6 py-8">
         {loading ? (
-          <p className="text-center">Loading routes...</p>
+          <p className="text-center text-gray-400">Loading routes...</p>
         ) : error ? (
           <p className="text-center text-red-500">{error}</p>
         ) : routes.length > 0 ? (
-          <ul className="flex flex-wrap gap-6 text-sm mt-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {routes.map((route) => (
-              <li
+              <div
                 key={route._id}
                 onClick={() => openModal(route)}
-                className="text-center p-2 bg-transparent rounded-2xl cursor-pointer shadow-sm shadow-black/50 hover:shadow-black"
+                className="p-4 bg-gray-800 rounded-lg shadow-md hover:shadow-lg hover:bg-gray-700 transition cursor-pointer"
               >
-                <div>
-                  <p className="text-xl">From: {route.departure.location}</p>
-                  <p className="text-xl">To: {route.arrival.location}</p>
-                  <p>
-                    Departure Time:{" "}
+                <h2 className="text-xl font-semibold mb-2">
+                  {route.departure.location} → {route.arrival.location}
+                </h2>
+                <ul className="text-sm space-y-1">
+                  <li>
+                    <strong>Departure:</strong>{" "}
+                    {formatDate(route.departure.date || new Date())},{" "}
                     {formatTime(route.departure.time || "00:00")}
-                  </p>
-                  <p>
-                    Departure Date:{" "}
-                    {formatDate(route.departure.date || new Date())}
-                  </p>
-                  <p>
-                    Arrival Time: {formatTime(route.arrival.time || "00:00")}
-                  </p>
-                  <p>
-                    Arrival Date: {formatDate(route.arrival.date || new Date())}
-                  </p>
-                  <p className="text-xl">Price: Rs. {route.price}</p>
-                </div>
-              </li>
+                  </li>
+                  <li>
+                    <strong>Arrival:</strong>{" "}
+                    {formatDate(route.arrival.date || new Date())},{" "}
+                    {formatTime(route.arrival.time || "00:00")}
+                  </li>
+                  <li>
+                    <strong>Price:</strong> Rs. {route.price}
+                  </li>
+                </ul>
+              </div>
             ))}
-          </ul>
+          </div>
         ) : (
-          <p className="text-center text-white">No routes available.</p>
+          <p className="text-center text-gray-400">No routes available.</p>
         )}
       </div>
 
+      {/* Modal */}
       <ModalRootes
         isOpen={modalOpen}
         onClose={closeModal}

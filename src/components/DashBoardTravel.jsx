@@ -1,8 +1,5 @@
 /* eslint-disable no-unused-vars */
 import React from "react";
-
-import backpic from "./Pics/Signuppics/signUpback3.jpg";
-
 import { Routes, Route } from "react-router-dom";
 import TravelProfile from "./Travel/TravelProfile";
 import SidebarT from "./Travel/SidebarT";
@@ -10,29 +7,20 @@ import RootesT from "./Travel/RootesT";
 
 export default function DashBoardTravel() {
   return (
-    <>
-      {/* ----------------------------img background------------------- */}
+    <div className="flex h-screen bg-gray-900 text-white">
+      {/* Sidebar */}
+      <SidebarT type="Travel" prp1="Routes" prp2="Logout" />
 
-      <div className="">
-        <img
-          src={backpic}
-          alt=""
-          className=" h-screen w-screen absolute opacity-1 "
-        />
-      </div>
-      {/* ---------------front------------------ */}
-      <div className="flex flex-col md:flex-row h-screen opacity-1">
-        {/* ----------------------------sidebar------------------------- */}
-        <SidebarT type="Travel" prp1="Rootes" prp2="Logout" />
-
-        {/* -------------------------main Contanier---------------- */}
-        <div className="flex-1 ">
+      {/* Main Content */}
+      <div className="flex-1 overflow-y-auto">
+        {/* Main Container */}
+        <div className="p-6 bg-gray-800 h-full rounded-tl-md shadow-lg">
           <Routes>
             <Route path="travel" element={<TravelProfile />} />
             <Route path="RootesT" element={<RootesT />} />
           </Routes>
         </div>
       </div>
-    </>
+    </div>
   );
 }

@@ -1,27 +1,12 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
-import React, { useEffect } from "react";
-import { gsap } from "gsap";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { logoutUser } from "../../backend-services/authServices";
+import { FaUser, FaPlane, FaHotel, FaInfoCircle, FaSignOutAlt, FaBars } from "react-icons/fa";
 
 export default function SidebarP(props) {
-  useEffect(() => {
-    const t1 = gsap.timeline();
-    t1.to("#prp1", { duration: 0, y: -50, opacity: 0 });
-    t1.to("#prp2", { duration: 0, y: -100, opacity: 0 });
-    t1.to("#prp3", { duration: 0, y: -150, opacity: 0 });
-    t1.to("#prp4", { duration: 0, y: -200, opacity: 0 });
-    // t1.to("#prp5", { duration: 0 , y: -250, opacity: 0 })
-
-    const t2 = gsap.timeline();
-    t2.to("#prp1", { duration: 0.5, y: 10, opacity: 1 });
-    t2.to("#prp2", { duration: 0.6, y: 20, opacity: 1 });
-    t2.to("#prp3", { duration: 0.9, y: 30, opacity: 1 });
-    t2.to("#prp4", { duration: 1.2, y: 40, opacity: 1 });
-    // t2.to("#prp5", { duration: 1.5 , y: 50, opacity: 1 })
-  }, []);
-
+  const [isOpen, setIsOpen] = useState(true); // State to toggle the sidebar
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -34,53 +19,61 @@ export default function SidebarP(props) {
   };
 
   return (
-    <div>
-      <div className="flex-1 bg-transparent m-3 rounded-lg py-3 px-6  ">
-        <p className="text-2xl font-semibold font-sans text-white">Quick As</p>
-        {/* -----------------changing by props------------------------- */}
-        <div className="text-white text-lg my-8 text-center">
-          <p
-            onClick={() => {
-              navigate("passenger");
-            }}
-            className="p-2 hover:cursor-pointer rounded-2xl my-3 backdrop-blur-sm bg-white/10  hover:shadow-md hover:shadow-black/40 active:shadow-md active:shadow-black/40"
+    <div className="flex">
+      {/* Hamburger Menu */}
+      <button
+        className="p-4 text-white bg-gray-800 fixed z-50"
+        onClick={() => setIsOpen(!isOpen)}
+        aria-label="Toggle Sidebar"
+      >
+        <FaBars />
+      </button>
+
+      {/* Sidebar */}
+      <div
+        className={`fixed top-0 left-0 h-full bg-gradient-to-br from-gray-800 to-black text-white shadow-lg ${
+          isOpen ? "block" : "hidden"
+        }`}
+        style={{ width: "250px" }}
+      >
+        <h2 className="text-2xl font-bold text-center py-10">Belike Tourism</h2>
+
+        <div className="space-y-6 px-4">
+          <button
+            onClick={() => navigate("passenger")}
+            className="flex items-center w-full py-3 px-4 rounded-lg bg-white/10 hover:bg-blue-600 hover:shadow-lg transition duration-300"
           >
-            {props.type} Profile
-          </p>
-          <div
-            onClick={() => {
-              navigate("travelP");
-            }}
-            id="prp1"
-            className="p-2 px-10 backdrop-blur-sm bg-white/20  rounded-2xl my-3 cursor-pointer text-white hover:shadow-md hover:shadow-black/40"
+            <FaUser className="mr-3" />
+            <span>{props.type} Profile</span>
+          </button>
+          <button
+            onClick={() => navigate("travelP")}
+            className="flex items-center w-full py-3 px-4 rounded-lg bg-white/10 hover:bg-green-600 hover:shadow-lg transition duration-300"
           >
-            <p>{props.prp1}</p>
-          </div>
-          <div
-            id="prp2"
-            onClick={() => {
-              navigate("hotelP");
-            }}
-            className="p-2 backdrop-blur-sm bg-white/20  rounded-2xl my-3 cursor-pointer hover:shadow-md hover:shadow-black/40 active:shadow-md active:shadow-black/40"
+            <FaPlane className="mr-3" />
+            <span>{props.prp1}</span>
+          </button>
+          <button
+            onClick={() => navigate("hotelP")}
+            className="flex items-center w-full py-3 px-4 rounded-lg bg-white/10 hover:bg-orange-600 hover:shadow-lg transition duration-300"
           >
-            <p>{props.prp2}</p>
-          </div>
-          <div
-            id="prp3"
-            onClick={() => {
-              navigate("detailsP");
-            }}
-            className="p-2 backdrop-blur-sm bg-white/20  rounded-2xl my-3 cursor-pointer hover:shadow-md hover:shadow-black/40 active:shadow-md active:shadow-black/40"
+            <FaHotel className="mr-3" />
+            <span>{props.prp2}</span>
+          </button>
+          <button
+            onClick={() => navigate("detailsP")}
+            className="flex items-center w-full py-3 px-4 rounded-lg bg-white/10 hover:bg-yellow-600 hover:shadow-lg transition duration-300"
           >
-            <p>{props.prp3}</p>
-          </div>
-          <div
-            id="prp4"
+            <FaInfoCircle className="mr-3" />
+            <span>{props.prp3}</span>
+          </button>
+          <button
             onClick={handleLogout}
-            className="p-2 backdrop-blur-sm bg-white/20  rounded-2xl my-3 cursor-pointer hover:shadow-md hover:shadow-black/40 active:shadow-md active:shadow-black/40"
+            className="flex items-center w-full py-3 px-4 rounded-lg bg-white/10 hover:bg-red-600 hover:shadow-lg transition duration-300"
           >
-            <p>{props.prp4}</p>
-          </div>
+            <FaSignOutAlt className="mr-3" />
+            <span>{props.prp4}</span>
+          </button>
         </div>
       </div>
     </div>
