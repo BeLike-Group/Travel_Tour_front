@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const api = axios.create({
-  // baseURL: "https://travel-tour-back.onrender.com", // Replace with your backend URL
-baseURL:"http://localhost:8000",
+ baseURL: "https://travel-tour-back.onrender.com", // Replace with your backend URL
+// baseURL:"http://localhost:8000",
   headers: {
     "Content-Type": "application/json",
   },
@@ -52,7 +52,7 @@ api.interceptors.response.use(
       try {
         // Attempt to refresh the token
         const { data } = await axios.post(
-          "http://localhost:8000/api/v1/users/refresh-token",
+          "https://travel-tour-back.onrender.com/api/v1/users/refresh-token",
           {},
           { withCredentials: true } // Send cookies
         );
