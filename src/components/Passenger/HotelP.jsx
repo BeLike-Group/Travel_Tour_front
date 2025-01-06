@@ -49,9 +49,16 @@ export default function HotelP() {
                 role="button"
                 aria-label={`Navigate to ${hotel.username || hotel.name}`}
                 onClick={() =>
-                  hotel.username
-                    ? navigate(hotel.username.replace(/\s+/g, ""))
-                    : console.error("Invalid hotel username")
+                  navigate(
+                    hotel.username.replace(/\s+/g, ""), // Route path
+                    {
+                      state: {
+                        hotelId: hotel._id,
+                        hotelName: hotel.username || hotel.name,
+                        // contactInfo: hotel.contactInfo, // Pass contact info if needed
+                      },
+                    }
+                  )
                 }
                 className="p-6 bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition cursor-pointer"
               >

@@ -5,7 +5,7 @@ export const getAllPasssenger = async (token) => {
   if (!token) {
     throw new Error("Authentication token is missing. Please log in.");
   }
-
+  
   try {
     const { data } = await api.get("/api/v1/users/getAllPassenger", {
       headers: {

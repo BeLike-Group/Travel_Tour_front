@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useRef, useState } from "react";
 import Navbarmini from "./Navbarmini";
 import {
@@ -25,6 +24,7 @@ export default function Hotels() {
   const [isEditing, setIsEditing] = useState(false);
   const [editingHotelId, setEditingHotelId] = useState(null);
 
+  // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name in formData.contactInfo) {
@@ -37,17 +37,20 @@ export default function Hotels() {
     }
   };
 
+  // Start editing a hotel
   const startEditing = (hotel) => {
     setFormData({
       username: hotel.username,
-      password: "", // Leave blank for security
+      password: "", // Password left blank for security
       role: "Hotel",
       contactInfo: { ...hotel.contactInfo },
     });
     setIsEditing(true);
-    setEditingHotelId(hotel._id); // or company._id based on your schema
+    setEditingHotelId(hotel._id);
+    formRef.current.scrollIntoView({ behavior: "smooth" }); // Scroll to the form
   };
 
+  // Handle form submission (Add or Update)
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("authToken");
@@ -57,56 +60,42 @@ export default function Hotels() {
       return;
     }
 
-    if (isEditing) {
-      // Update mode
-      try {
+    try {
+      if (isEditing) {
         const response = await updateHotel(editingHotelId, formData, token);
         alert(response.message || "Hotel updated successfully");
-        fetchHotels(); // Refresh the list
-        setIsEditing(false);
-        setEditingHotelId(null);
-        setFormData({
-          username: "",
-          password: "",
-          role: "Hotel",
-          contactInfo: { email: "", phone: "", address: "" },
-        }); // Reset form
-      } catch (error) {
-        console.error("Update failed:", error.message);
-        alert("Failed to update Hotel");
-      }
-    } else {
-      // Add mode
-      try {
+      } else {
         const response = await addHotel(formData, token);
         alert(response.message || "Hotel added successfully");
-        fetchHotels();
-      } catch (error) {
-        console.error("Registration failed:", error.message);
-        alert("Failed to register Hotel");
       }
+      fetchHotels(); // Refresh the list
+      resetForm();
+    } catch (error) {
+      console.error("Failed to save hotel:", error.message);
+      alert("Failed to save hotel");
     }
   };
 
+  // Fetch all hotels
   const fetchHotels = async () => {
-    const token = localStorage.getItem("authToken"); // Retrieve token from storage
+    const token = localStorage.getItem("authToken");
 
     if (!token) {
-      alert("You must be logged in to view hotel.");
+      alert("You must be logged in to view hotels.");
       return;
     }
 
     try {
       const response = await getAllHotel(token);
-      console.log("API Response:", response); // Log response to check structure
-      setHotels(response.data || []); // Adjust based on actual response structure
+      setHotels(response.data || []);
     } catch (error) {
       console.error("Failed to fetch hotels:", error.message);
     }
   };
 
-  const deleteCompany = async (hotelId) => {
-    const token = localStorage.getItem("authToken"); // Retrieve token from storage
+  // Delete a hotel
+  const deleteHotelHandler = async (hotelId) => {
+    const token = localStorage.getItem("authToken");
 
     if (!token) {
       alert("You must be logged in to perform this action.");
@@ -116,134 +105,113 @@ export default function Hotels() {
     try {
       const response = await deleteHotel(hotelId, token);
       alert(response.message || "Hotel deleted successfully");
-      fetchHotels(); // Refresh the hotels list after deletion
+      fetchHotels(); // Refresh the hotels list
     } catch (error) {
       console.error("Failed to delete hotel:", error.message);
       alert("Failed to delete hotel");
     }
   };
 
+  // Reset form state
+  const resetForm = () => {
+    setFormData({
+      username: "",
+      password: "",
+      role: "Hotel",
+      contactInfo: { email: "", phone: "", address: "" },
+    });
+    setIsEditing(false);
+    setEditingHotelId(null);
+  };
+
   useEffect(() => {
-    fetchHotels(); // Fetch the companies on component mount
+    fetchHotels(); // Fetch hotels on component mount
   }, []);
 
   return (
-    <div className="bg-slate-950">
-      <Navbarmini name="Hotels" />
+    <div className="bg-slate-950 min-h-screen pt-10">
+
+
+      {/* Main Container */}
       <div className="overflow-auto h-[30rem] m-auto pt-4 w-full md:w-fit px-2 md:px-24 backdrop-blur-sm bg-white/10 py-4 shadow-lg shadow-black text-white rounded-md">
-        {/* Add Hotel Form */}
-        <form onSubmit={handleSubmit}>
-          <div className="flex flex-col md:flex-row lg:pt-8 min-[425px]:pt-1 lg:gap-[9rem] min-[425px]:gap-4 justify-center">
-            <div className="w-full md:w-auto">
-              <input
-                type="text"
-                name="username"
-                value={formData.username}
-                placeholder="Username"
-                onChange={handleChange}
-                className="w-full backdrop-blur-none bg-transparent px-4 py-2 shadow-sm shadow-black text-white rounded-md focus:outline-none focus:ring-2 placeholder-white"
-              />
-            </div>
-            <div className="w-full md:w-auto">
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                placeholder="Password"
-                onChange={handleChange}
-                className="w-full bg-transparent px-4 py-2 shadow-sm shadow-black text-white rounded-md focus:outline-none focus:ring-2 placeholder-white"
-              />
-            </div>
+        {/* Form Section */}
+        <form ref={formRef} onSubmit={handleSubmit} className="mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <input
+              type="text"
+              name="username"
+              value={formData.username}
+              placeholder="Username"
+              onChange={handleChange}
+              className="w-full px-4 py-2 bg-transparent shadow-sm rounded-md placeholder-white focus:outline-none focus:ring-2"
+            />
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              placeholder="Password"
+              onChange={handleChange}
+              className="w-full px-4 py-2 bg-transparent shadow-sm rounded-md placeholder-white focus:outline-none focus:ring-2"
+            />
+            <input
+              type="email"
+              name="email"
+              value={formData.contactInfo.email}
+              placeholder="Email"
+              onChange={handleChange}
+              className="w-full px-4 py-2 bg-transparent shadow-sm rounded-md placeholder-white focus:outline-none focus:ring-2"
+            />
+            <input
+              type="text"
+              name="phone"
+              value={formData.contactInfo.phone}
+              placeholder="Phone"
+              onChange={handleChange}
+              className="w-full px-4 py-2 bg-transparent shadow-sm rounded-md placeholder-white focus:outline-none focus:ring-2"
+            />
+            <input
+              type="text"
+              name="address"
+              value={formData.contactInfo.address}
+              placeholder="Address"
+              onChange={handleChange}
+              className="w-full px-4 py-2 bg-transparent shadow-sm rounded-md placeholder-white focus:outline-none focus:ring-2"
+            />
           </div>
-          <div className="flex flex-col md:flex-row lg:pt-4 min-[425px]:pt-1 lg:gap-[12rem] min-[425px]:gap-4 justify-center mt-4">
-            <div className="w-full md:w-auto">
-              <input
-                type="email"
-                name="email"
-                value={formData.contactInfo.email}
-                placeholder="Email"
-                onChange={handleChange}
-                className="w-full bg-transparent px-4 py-2 shadow-sm shadow-black text-white rounded-md focus:outline-none focus:ring-2 placeholder-white"
-              />
-            </div>
-            <div className="w-full md:w-auto">
-              <select
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-                className="w-full bg-transparent px-4 py-2 shadow-sm shadow-black text-white rounded-md focus:outline-none focus:ring-2 placeholder-white"
-              >
-                <option value="">Select Role</option>
-                <option value="Admin">Admin</option>
-                <option value="TravelCompany">TravelCompany</option>
-                <option value="Hotel">Hotel</option>
-                <option value="Passenger">Passenger</option>
-              </select>
-            </div>
-          </div>
-          <div className="flex flex-col md:flex-row lg:gap-[9rem] min-[425px]:gap-4 justify-center mt-4">
-            <div className="w-full md:w-auto">
-              <input
-                type="text"
-                name="phone"
-                value={formData.contactInfo.phone}
-                placeholder="Phone"
-                onChange={handleChange}
-                className="w-full bg-transparent px-4 py-2 shadow-sm shadow-black text-white rounded-md focus:outline-none focus:ring-2 placeholder-white"
-              />
-            </div>
-            <div className="w-full md:w-auto">
-              <input
-                type="text"
-                name="address"
-                placeholder="Address"
-                value={formData.contactInfo.address}
-                onChange={handleChange}
-                className="w-full bg-transparent px-4 py-2 shadow-sm shadow-black text-white rounded-md focus:outline-none focus:ring-2 placeholder-white"
-              />
-            </div>
-          </div>
-          <div className="flex justify-center mt-5">
+          <div className="flex justify-center mt-4">
             <button
               type="submit"
-              className="bg-blue-500 text-white px-4 py-2 rounded mt-2 shadow-md shadow-black/30"
+              className="px-6 py-2 bg-blue-600 rounded-md shadow hover:bg-blue-500"
             >
               {isEditing ? "Update Hotel" : "Add Hotel"}
             </button>
           </div>
         </form>
-  
-        {/* Hotels List */}
-        <div className="flex flex-col w-full justify-between p-6 shadow-md shadow-black/50 hover:shadow-black/80 text-white rounded-md mt-4">
-          <div className="grid grid-cols-1 md:grid-cols-5 lg:gap-16 min-[425px]:gap-2 text-[0.95rem] font-semibold">
-            <div>Hotel Name</div>
-            <div>Email</div>
-            <div>Phone</div>
-            <div>Address</div>
-            <div>Action</div>
-   </div>
-          {Array.isArray(hotels) && hotels.map((hotel, index) => (
+
+        {/* Hotels List Section */}
+        <div className="space-y-4">
+          {hotels.map((hotel) => (
             <div
-              key={index}
-              className="flex flex-col md:flex-row justify-between p-6 shadow-md shadow-black/50 hover:shadow-black/80 text-white rounded-md mt-4"
+              key={hotel._id}
+              className="grid grid-cols-1 md:grid-cols-5 gap-4 p-4 bg-gray-900 rounded-lg shadow-md"
             >
-              <div className="tracking-tight text-[0.95rem]">{hotel.username}</div>
-              <div className="tracking-tight text-[0.95rem]">{hotel.contactInfo.email}</div>
-              <div className="tracking-tight text-[0.95rem]">{hotel.contactInfo.phone}</div>
-              <div className="tracking-tight text-[0.95rem]">{hotel.contactInfo.address}</div>
+              <div>{hotel.username}</div>
+              <div>{hotel.contactInfo.email}</div>
+              <div>{hotel.contactInfo.phone}</div>
+              <div>{hotel.contactInfo.address}</div>
               <div className="flex gap-2">
-                <div
-                  className="p-2 bg-red-600 text-xs rounded-lg cursor-pointer"
-                  onClick={() => deleteCompany(hotel._id)}
-                >
-                  Delete
-                </div>
-                <div
-                  className="p-2 bg-yellow-600 text-xs rounded-lg cursor-pointer"
+                <button
+                  className="px-4 py-2 bg-yellow-600 text-xs rounded-lg hover:bg-yellow-500"
                   onClick={() => startEditing(hotel)}
                 >
                   Edit
-                </div>
+                </button>
+                <button
+                  className="px-4 py-2 bg-red-600 text-xs rounded-lg hover:bg-red-500"
+                  onClick={() => deleteHotelHandler(hotel._id)}
+                >
+                  Delete
+                </button>
               </div>
             </div>
           ))}

@@ -11,34 +11,37 @@ export default function AdminBookings() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
 
+  // Fetch all bookings on component mount
   useEffect(() => {
-    async function fetchBookings() {
+    const fetchBookings = async () => {
+      setLoading(true);
       try {
-        setLoading(true);
         const response = await getAllBookings();
-        setBookings(response.data.bookings);
-        console.log("Fetched bookings:", response.data.bookings);
-        setLoading(false);
+        setBookings(response.data.bookings || []);
+        setMessage(null); // Clear any previous error message
       } catch (error) {
         console.error("Error fetching bookings:", error);
         setMessage("Failed to load bookings. Please try again.");
+      } finally {
         setLoading(false);
       }
-    }
+    };
+
     fetchBookings();
   }, []);
 
+  // Update booking status and seat availability
   const handleStatusUpdate = async (bookingId, newStatus, routeId, selectedSeats) => {
-    console.log("Updating booking:", { bookingId, newStatus, routeId, selectedSeats });
     try {
-      const updatedBooking = await updateBookingStatus(bookingId, newStatus);
-      console.log("Booking status updated:", updatedBooking);
+      // Update booking status
+      await updateBookingStatus(bookingId, newStatus);
 
-      if (newStatus === "confirmed") {
-        console.log("Updating seat availability for routeId:", routeId);
+      // If status is confirmed, update seat availability
+      if (newStatus === "confirmed" && routeId && selectedSeats) {
         await updateSeatAvailability(routeId, selectedSeats);
       }
 
+      // Update booking list with the new status
       setBookings((prevBookings) =>
         prevBookings.map((booking) =>
           booking._id === bookingId ? { ...booking, status: newStatus } : booking
@@ -57,76 +60,77 @@ export default function AdminBookings() {
       <Navbarmini name="Manage Bookings" />
       <div className="container mx-auto px-6 py-8">
         <h2 className="text-2xl font-bold mb-6">Bookings</h2>
+
         {loading ? (
-          <p className="text-center">Loading bookings...</p>
+          <p className="text-center text-gray-400">Loading bookings...</p>
         ) : bookings.length > 0 ? (
           bookings.map((booking) => (
             <div
               key={booking._id}
-              className="bg-gray-800 p-4 rounded-lg shadow-md mb-4"
+              className="bg-gray-800 p-6 rounded-lg shadow-md mb-6"
             >
-              <p>
-                <strong>ID:</strong> {booking._id}
-              </p>
-              <p>
-                <strong>User ID:</strong> {booking.userId}
-              </p>
-              <p>
-                <strong>Service Type:</strong> {booking.serviceType}
-              </p>
-              <p>
-                <strong>Service ID:</strong> {booking.serviceId}
-              </p>
-              <p>
-                <strong>Seats:</strong>{" "}
-                {booking.Seats.map((seat, index) => (
-                  <span key={index}>{seat.seatNumber} </span>
-                ))}
-              </p>
-              <p>
-                <strong>Departure Date:</strong>{" "}
-                {new Date(booking.departureDate).toLocaleDateString()}
-              </p>
-              <p>
-                <strong>Arrival Date:</strong>{" "}
-                {new Date(booking.arrivalDate).toLocaleDateString()}
-              </p>
-              <p>
-                <strong>Status:</strong>{" "}
-                <span
-                  className={`${
-                    booking.status === "confirmed"
-                      ? "text-green-500"
-                      : "text-red-500"
-                  }`}
+              <div className="grid grid-cols-2 gap-4">
+                <p>
+                  <strong>ID:</strong> {booking._id}
+                </p>
+                <p>
+                  <strong>User ID:</strong> {booking.userId}
+                </p>
+                <p>
+                  <strong>Service Type:</strong> {booking.serviceType}
+                </p>
+                <p>
+                  <strong>Service ID:</strong> {booking.serviceId}
+                </p>
+                <p className="col-span-2">
+                  <strong>Seats:</strong>{" "}
+                  {booking.Seats.map((seat, index) => (
+                    <span key={index}>{seat} </span>
+                  ))}
+                </p>
+                <p>
+                  <strong>Departure Date:</strong>{" "}
+                  {new Date(booking.departureDate).toLocaleDateString()}
+                </p>
+                <p>
+                  <strong>Arrival Date:</strong>{" "}
+                  {new Date(booking.arrivalDate).toLocaleDateString()}
+                </p>
+                <p>
+                  <strong>Status:</strong>{" "}
+                  <span
+                    className={`font-semibold ${
+                      booking.status === "confirmed"
+                        ? "text-green-500"
+                        : "text-red-500"
+                    }`}
+                  >
+                    {booking.status}
+                  </span>
+                </p>
+              </div>
+              <div className="flex justify-end mt-4 space-x-4">
+                <button
+                  className="px-4 py-2 bg-blue-600 rounded hover:bg-blue-500"
+                  onClick={() =>
+                    handleStatusUpdate(
+                      booking._id,
+                      "confirmed",
+                      booking.serviceId,
+                      booking.Seats
+                    )
+                  }
                 >
-                  {booking.status}
-                </span>
-              </p>
-              <div className="flex justify-end space-x-4 mt-4">
-              <button
-  className="px-4 py-2 bg-blue-600 rounded hover:bg-blue-500"
-  onClick={() => {
-    console.log("Confirm button clicked for booking ID:", booking._id);
-    handleStatusUpdate(
-      booking._id,
-      "confirmed",
-      booking.serviceId,
-      booking.Seats
-    );
-  }}
->
-  Confirm
-</button>
-<button
-  className="px-4 py-2 bg-red-600 rounded hover:bg-red-500"
-  onClick={() => {
-    console.log("Cancel button clicked for booking ID:", booking._id);
-    handleStatusUpdate(booking._id, "cancelled");
-  }}
->
-  Cancel
-</button>
+                  Confirm
+                </button>
+                <button
+                  className="px-4 py-2 bg-red-600 rounded hover:bg-red-500"
+                  onClick={() =>
+                    handleStatusUpdate(booking._id, "cancelled")
+                  }
+                >
+                  Cancel
+                </button>
               </div>
             </div>
           ))
@@ -135,7 +139,7 @@ export default function AdminBookings() {
         )}
 
         {message && (
-          <div className="text-center mt-4 text-yellow-400">{message}</div>
+          <div className="mt-4 text-center text-yellow-400">{message}</div>
         )}
       </div>
     </div>

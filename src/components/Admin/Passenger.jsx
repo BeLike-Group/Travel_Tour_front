@@ -3,32 +3,33 @@ import React, { useState, useEffect } from "react";
 import Navbarmini from "./Navbarmini";
 import {
   getAllPasssenger,
-  deletePassenger as deletePassengerApi, // Renamed the imported deletePassenger function
+  deletePassenger as deletePassengerApi,
 } from "../../backend-services/adminPassengerServices";
 
 export default function Passenger() {
   const [passengers, setPassengers] = useState([]);
 
+  // Fetch passengers from API
   const fetchPassengers = async () => {
-    const token = localStorage.getItem("authToken"); // Retrieve token from storage
+    const token = localStorage.getItem("authToken");
 
     if (!token) {
-      alert("You must be logged in to view passenger.");
+      alert("You must be logged in to view passengers.");
       return;
     }
 
     try {
       const response = await getAllPasssenger(token);
-      console.log("API Response:", response); // Log response to check structure
-      setPassengers(response.data || []); // Adjust based on actual response structure
+      console.log("API Response:", response);
+      setPassengers(response.data || []);
     } catch (error) {
       console.error("Failed to fetch passengers:", error.message);
     }
   };
 
+  // Handle passenger deletion
   const handleDeletePassenger = async (passengerId) => {
-    // Renamed function to handleDeletePassenger
-    const token = localStorage.getItem("authToken"); // Retrieve token from storage
+    const token = localStorage.getItem("authToken");
 
     if (!token) {
       alert("You must be logged in to perform this action.");
@@ -36,72 +37,65 @@ export default function Passenger() {
     }
 
     try {
-      const response = await deletePassengerApi(passengerId, token); // Use the renamed import
+      const response = await deletePassengerApi(passengerId, token);
       alert(response.message || "Passenger deleted successfully");
-      fetchPassengers(); // Refresh the passengers list after deletion
+      fetchPassengers();
     } catch (error) {
       console.error("Failed to delete passenger:", error.message);
       alert("Failed to delete passenger");
     }
   };
 
+  // Fetch passengers on component mount
   useEffect(() => {
-    fetchPassengers(); // Fetch the passengers on component mount
+    fetchPassengers();
   }, []);
 
   return (
-    <>
-      <div className="bg-slate-950">
-        {/* ----------------------------------nav--------------------------------- */}
-        <Navbarmini name="Passenger" />
-        {/* ----------------------------main container----------------------------- */}
-        <div
-          style={{
-            scrollbarWidth: "none" /* Firefox */,
-            msOverflowStyle: "none" /* IE 10+ */,
-          }}
-          className="overflow-auto h-[32.5rem] flex-1 p-5 m-auto pt-[5rem] w-fit px-24 backdrop-blur-sm bg-white/10 py-[6rem] shadow-lg shadow-black text-white rounded-md focus:outline-none focus:ring-2 placeholder-white"
-        >
-          {/* -----------------------------------Fetched Passengers-------------------------------------- */}
-          <div className="flex flex-col w-full justify-between p-6 shadow-md shadow-black/50 hover:shadow-black/80 text-white rounded-md mt-4">
-            <div className="grid grid-cols-1 md:grid-cols-5 lg:gap-16 min-[425px]:gap-2 text-[0.95rem] font-semibold">
-              <div>Name</div>
-              <div>Email</div>
-              <div>Phone</div>
-              <div>Address</div>
-              <div>Action</div>
-            </div>
-            {/* Table Rows */}
-            {passengers.map((passenger, index) => (
+    <div className="bg-slate-950 min-h-screen">
+      {/* Navbar */}
+
+
+      {/* Main Container */}
+      <div className="overflow-auto h-[32.5rem] p-5 m-auto pt-20 w-fit px-24 backdrop-blur-sm bg-white/10 py-24 shadow-lg shadow-black text-white rounded-md">
+        {/* Passengers List */}
+        <div className="flex flex-col w-full">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 text-sm font-semibold p-4 bg-gray-800 rounded-lg">
+            <div>Name</div>
+            <div>Email</div>
+            <div>Phone</div>
+            <div>Address</div>
+            <div>Action</div>
+          </div>
+
+          {/* Passenger Rows */}
+          {passengers.length > 0 ? (
+            passengers.map((passenger, index) => (
               <div
                 key={index}
-                className="flex flex-col md:flex-row justify-between p-6 shadow-md shadow-black/50 hover:shadow-black/80 text-white rounded-md mt-4"
+                className="grid grid-cols-1 md:grid-cols-5 gap-4 p-4 bg-gray-900 rounded-lg mt-4 shadow-md hover:shadow-lg"
               >
-                <div className="tracking-tight text-[0.95rem]">
-                  {passenger.username}
-                </div>
-                <div className="tracking-tight text-[0.95rem]">
-                  {passenger.contactInfo.email}
-                </div>
-                <div className="tracking-tight text-[0.95rem]">
-                  {passenger.contactInfo.phone}
-                </div>
-                <div className="tracking-tight text-[0.95rem]">
-                  {passenger.contactInfo.address}
-                </div>
-                <div className="flex gap-2">
-                  <div
-                    className="p-2 bg-red-600 text-xs rounded-lg cursor-pointer"
-                    onClick={() => handleDeletePassenger(passenger._id)} // Use the renamed function
+                <div>{passenger.username}</div>
+                <div>{passenger.contactInfo?.email || "N/A"}</div>
+                <div>{passenger.contactInfo?.phone || "N/A"}</div>
+                <div>{passenger.contactInfo?.address || "N/A"}</div>
+                <div>
+                  <button
+                    className="px-4 py-2 bg-red-600 text-xs rounded-lg hover:bg-red-500"
+                    onClick={() => handleDeletePassenger(passenger._id)}
                   >
                     Delete
-                  </div>
+                  </button>
                 </div>
               </div>
-            ))}
-          </div>
+            ))
+          ) : (
+            <p className="text-center text-gray-400 mt-6">
+              No passengers found.
+            </p>
+          )}
         </div>
       </div>
-    </>
+    </div>
   );
 }

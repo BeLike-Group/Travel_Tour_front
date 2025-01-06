@@ -3,31 +3,19 @@
 import React, { useState, useEffect } from "react";
 import ModalRoom from "./ModalRoom";
 import { getAllHotelRooms } from "../../backend-services/bookingServices";
+import { FaBed, FaCalendarAlt, FaMoneyBillWave } from "react-icons/fa";
 
 export default function RoomP({ hotelId, hotelName }) {
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedRoom, setSelectedRoom] = useState("");
+  const [selectedRoom, setSelectedRoom] = useState(null);
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const formatDate = (dateString) => {
+    if (!dateString) return "Invalid Date";
     const date = new Date(dateString);
     return date.toISOString().split("T")[0];
-  };
-
-  const formatTime = (timeString) => {
-    if (!timeString) return "Invalid Time";
-    const [hours, minutes] = timeString.split(":").map(Number);
-    if (isNaN(hours) || isNaN(minutes)) return "Invalid Time";
-
-    const date = new Date();
-    date.setHours(hours, minutes, 0);
-    return new Intl.DateTimeFormat("en-US", {
-      hour: "numeric",
-      minute: "numeric",
-      hour12: true,
-    }).format(date);
   };
 
   const openModal = (room) => {
@@ -47,19 +35,18 @@ export default function RoomP({ hotelId, hotelName }) {
 
   useEffect(() => {
     const fetchRooms = async () => {
-      setLoading(true); // Reset loading state for each fetch
-      setError(null); // Reset error state
-      setRooms([]); // Clear previous rooms
+      setLoading(true);
+      setError(null);
+      setRooms([]);
 
       if (!hotelId) {
-        setError("Company ID is required to fetch rooms.");
+        setError("Hotel ID is required to fetch rooms.");
         setLoading(false);
         return;
       }
 
       try {
-        const response = await getAllHotelRooms(hotelId); // Pass companyId to the API
-        console.log("API Response:", response);
+        const response = await getAllHotelRooms(hotelId);
         const fetchedRooms = response?.data || [];
         setRooms(fetchedRooms);
       } catch (err) {
@@ -71,49 +58,58 @@ export default function RoomP({ hotelId, hotelName }) {
     };
 
     fetchRooms();
-  }, [hotelId]); // Re-run effect whenever companyId changes
+  }, [hotelId]);
 
   return (
-    <div>
-      <div className="p-5 bg-transparent mt-16 m-auto w-fit px-6 text-white rounded-md">
-        <p className="text-center text-[1.4rem] font-semibold">
-          Rooms Available from {hotelName}
-        </p>
+    <div className="bg-gradient-to-br from-gray-800 via-black to-gray-900 min-h-screen text-white">
+      {/* Header */}
+      <div className="py-8 text-center">
+        <h1 className="text-3xl font-bold">
+          Rooms Available at {hotelName}
+        </h1>
+      </div>
+
+      {/* Main Content */}
+      <div className="container mx-auto px-6 py-8">
         {loading ? (
-          <p className="text-center">Loading rooms...</p>
+          <p className="text-center text-gray-400">Loading rooms...</p>
         ) : error ? (
           <p className="text-center text-red-500">{error}</p>
         ) : rooms.length > 0 ? (
-          <ul className="flex flex-wrap gap-6 text-sm mt-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {rooms.map((room) => (
-              <li
+              <div
                 key={room._id}
                 onClick={() => openModal(room)}
-                className="text-center p-2 bg-transparent rounded-2xl cursor-pointer shadow-sm shadow-black/50 hover:shadow-black"
+                className="p-4 bg-gray-800 rounded-lg shadow-md hover:shadow-lg hover:bg-gray-700 transition cursor-pointer"
               >
-                <div>
-                  <p className="text-xl">Room Type: {room.type}</p>
-                  <p>
-                    Availability From:{" "}
-                    {formatDate(room.availability.from || new Date())}
-                  </p>
-
-                  <p>
-                    Ailability To:{" "}
-                    {formatDate(room.availability.to || new Date())}
-                  </p>
-                  <p className="text-xl">
-                    Price Per Night: Rs. {room.pricePerNight}
-                  </p>
-                </div>
-              </li>
+                <h2 className="text-xl font-semibold mb-2 flex items-center gap-2">
+                  <FaBed className="text-green-500" />
+                  {room.type}
+                </h2>
+                <ul className="text-sm space-y-1">
+                  <li className="flex items-center gap-2">
+                    <FaCalendarAlt className="text-blue-500" />
+                    <strong>Availability From:</strong> {formatDate(room.availability.from)}
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <FaCalendarAlt className="text-yellow-500" />
+                    <strong>Availability To:</strong> {formatDate(room.availability.to)}
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <FaMoneyBillWave className="text-red-500" />
+                    <strong>Price Per Night:</strong> Rs. {room.pricePerNight}
+                  </li>
+                </ul>
+              </div>
             ))}
-          </ul>
+          </div>
         ) : (
-          <p className="text-center text-white">No rooms available.</p>
+          <p className="text-center text-gray-400">No rooms available.</p>
         )}
       </div>
 
+      {/* Modal */}
       <ModalRoom
         isOpen={modalOpen}
         onClose={closeModal}

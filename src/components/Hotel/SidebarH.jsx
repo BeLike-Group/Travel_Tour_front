@@ -1,62 +1,79 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable react/prop-types */
 import React, { useEffect } from "react";
 import { gsap } from "gsap";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { logoutUser } from "../../backend-services/authServices";
 
-export default function SidebarH(props) {
-  useEffect(() => {
-    const t1 = gsap.timeline();
-    t1.to("#prp1", { duration: 0, y: -50, opacity: 0 });
-    t1.to("#prp2", { duration: 0, y: -50, opacity: 0 });
-
-    const t2 = gsap.timeline();
-    t2.to("#prp1", { duration: 0.5, y: 10, opacity: 1 });
-    t2.to("#prp2", { duration: 0.7, y: 20, opacity: 1 });
-  }, []);
-
+export default function SidebarH({ type, prp1, prp2 }) {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const timeline = gsap.timeline();
+    timeline
+      .fromTo(
+        "#prp1",
+        { y: -50, opacity: 0 },
+        { duration: 0.5, y: 0, opacity: 1 }
+      )
+      .fromTo(
+        "#prp2",
+        { y: -50, opacity: 0 },
+        { duration: 0.7, y: 0, opacity: 1 }
+      );
+  }, []);
 
   const handleLogout = async () => {
     try {
-      await logoutUser(); // Call the logoutUser function
-      navigate("/login"); // Redirect to login page
+      await logoutUser();
+      navigate("/login");
     } catch (error) {
       console.error("Logout failed:", error.message);
     }
   };
 
+  // Strictly check the active route
+  const isActive = (path) => location.pathname === `/${path}`;
+
   return (
-    <div>
-      <div className="flex-1 bg-transparent m-3 rounded-lg py-3 px-6  ">
-        <p className="text-2xl font-semibold font-sans text-white">Quick As</p>
-        {/* -----------------changing by props------------------------- */}
-        <div className="text-white text-lg my-8 text-center">
-          <p
-            onClick={() => {
-              navigate("Hotel");
-            }}
-            className="p-2 hover:cursor-pointer rounded-2xl my-3 backdrop-blur-sm bg-white/10  hover:shadow-md hover:shadow-black/40 active:shadow-md active:shadow-black/40"
+    <div className="bg-gray-900 text-white min-h-screen flex flex-col items-start py-6 px-4 w-64">
+      <h2 className="text-2xl font-bold mb-6">Quick Access</h2>
+
+      <div className="space-y-4 w-full">
+        <div
+          className={`flex items-center gap-3 p-3 rounded-md cursor-pointer ${
+            isActive("Hotel") ? "bg-gray-800" : "hover:bg-gray-800"
+          } transition`}
+          onClick={() => navigate("Hotel")}
+        >
+          <span
+            className={`text-xl ${
+              isActive("Hotel") ? "text-blue-400" : "text-blue-500"
+            }`}
           >
-            {props.type} Profile
-          </p>
-          <div
-            onClick={() => {
-              navigate("RoomH");
-            }}
-            id="prp1"
-            className="p-2 px-10 backdrop-blur-sm bg-white/20  rounded-2xl my-3 cursor-pointer text-white hover:shadow-md hover:shadow-black/40"
-          >
-            <p>{props.prp1}</p>
-          </div>
-          <div
-            onClick={handleLogout}
-            id="prp2"
-            className="p-2 px-10 backdrop-blur-sm bg-white/20  rounded-2xl my-3 cursor-pointer text-white hover:shadow-md hover:shadow-black/40"
-          >
-            <p>{props.prp2}</p>
-          </div>
+            {type} Profile
+          </span>
+        </div>
+
+        <div
+          id="prp1"
+          className={`flex items-center gap-3 p-3 rounded-md cursor-pointer backdrop-blur-sm ${
+            isActive("RoomH") ? "bg-gray-800" : "bg-white/20 hover:bg-gray-800"
+          } transition`}
+          onClick={() => navigate("RoomH")}
+        >
+          <span className="text-lg">{prp1}</span>
+        </div>
+
+        <div
+          id="prp2"
+          className={`flex items-center gap-3 p-3 rounded-md cursor-pointer backdrop-blur-sm ${
+            location.pathname === "/login"
+              ? "bg-gray-800"
+              : "bg-white/20 hover:bg-gray-800"
+          } transition`}
+          onClick={handleLogout}
+        >
+          <span className="text-lg">{prp2}</span>
         </div>
       </div>
     </div>

@@ -16,6 +16,8 @@ export default function DashBoardPassenger() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const location = useLocation();
   const { companyId, cmpnyName } = location.state || {};
+  const { hotelId, hotelName } = location.state || {};
+
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-gray-800 via-black to-gray-900 text-white">
@@ -115,15 +117,15 @@ export default function DashBoardPassenger() {
 
               <Route path="hotelP/*" element={<HotelP />}>
                 <Route
-                  path="fourseasonhotel"
+                  path={hotelName}
                   element={
                     <RoomP
-                      hotelId="67481ac0576314f41b0870df"
-                      hotelName="Four Season Hotel"
+                      hotelId={hotelId}
+                      hotelName={hotelName}
                     />
                   }
                 />
-                <Route
+                {/* <Route
                   path="shangri-la hotel"
                   element={
                     <RoomP
@@ -140,7 +142,7 @@ export default function DashBoardPassenger() {
                       hotelName="Waldrof Astoria"
                     />
                   }
-                />
+                /> */}
               </Route>
               <Route path="detailsP" element={<DetailsP />} />
             </Routes>

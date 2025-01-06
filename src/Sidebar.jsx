@@ -11,12 +11,19 @@ export default function Sidebar(props) {
     t1.to("#prp3", { duration: 0, y: -150, opacity: 0 });
     t1.to("#prp5", { duration: 0, y: -250, opacity: 0 });
     t1.to("#prp6", { duration: 0, y: -250, opacity: 0 });
+    t1.to("#prp7", { duration: 0, y: -300, opacity: 0 });
+    t1.to("#prp8", { duration: 0, y: -350, opacity: 0 });
+
+
 
     const t2 = gsap.timeline();
     t2.to("#prp1", { duration: 0.5, y: 10, opacity: 1 });
     t2.to("#prp3", { duration: 0.9, y: 30, opacity: 1 });
     t2.to("#prp5", { duration: 1.5, y: 50, opacity: 1 });
-    t2.to("#prp6", { duration: 1.5, y: 50, opacity: 1 });
+    t2.to("#prp6", { duration: 1.5, y: 60, opacity: 1 });
+    t2.to("#prp7", { duration: 1.5, y: 70, opacity: 1 });
+    t2.to("#prp8", { duration: 1.5, y: 80, opacity: 1 });
+
   }, []);
 
   const navigate = useNavigate();
@@ -77,13 +84,24 @@ export default function Sidebar(props) {
           {props.prp6}
         </button>
         <button
-          id="prp6"
-          onClick={handleLogout}
-          className="w-full py-2 rounded-lg bg-red-500 hover:bg-red-700 hover:shadow-lg active:shadow-md active:scale-95 transition duration-300 ease-in-out"
-          aria-label={props.prp6}
+          id="prp7"
+          className="w-full py-2 rounded-lg  bg-white/10 hover:bg-blue-600 hover:shadow-lg active:shadow-md active:scale-95 transition duration-300 ease-in-out"
+          onClick={() => navigate("bookingroom")}
+          aria-label={props.prp7}
         >
           {props.prp7}
         </button>
+        <button
+          id="prp8"
+          onClick={handleLogout}
+          className="w-full py-2 rounded-lg bg-red-500 hover:bg-red-700 hover:shadow-lg active:shadow-md active:scale-95 transition duration-300 ease-in-out"
+          aria-label={props.prp8}
+        >
+          {props.prp8}
+        </button>
+
+
+
       </div>
     </div>
   );

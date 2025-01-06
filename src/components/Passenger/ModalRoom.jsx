@@ -1,168 +1,116 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import React from "react";
-import { createBooking } from "../../backend-services/bookingServices";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { FaBed, FaCalendarAlt, FaMoneyBillWave } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 export default function ModalRoom({ isOpen, onClose, room }) {
   if (!isOpen) return null;
+  const navigate = useNavigate();
 
   // Utility to format dates into YYYY-MM-DD
   const formatDate = (date) =>
-    date ? new Date(date).toISOString().split("T")[0] : "";
+    date ? new Date(date).toISOString().split("T")[0] : "N/A";
 
-  const handleSubmit = async (data) => {
-    try {
-      // Prepare the booking data to send, including serviceType as 'Hotel'
-      const bookingData = {
-        type: data.type,
-        availabilityFrom: data.availabilityFrom,
-        availabilityTo: data.availabilityTo,
-        pricePerNight: data.pricePerNight,
-        roomId: room._id, // assuming route has an _id field
-        serviceType: "Hotel", // Assuming you are always dealing with Hotel rooms
-      };
+  // const handleBooking = () => {
+  //   toast.success("Room booked successfully!", {
+  //     position: "top-right",
+  //     autoClose: 3000,
+  //     hideProgressBar: true,
+  //     closeOnClick: true,
+  //     pauseOnHover: true,
+  //     draggable: true,
+  //   });
 
-      // Call the createBooking function with the updated booking data
-      const response = await createBooking(
-        room._id,
-        "Hotel",
-        room._id,
-        "confirmed"
-      ); // pass the correct parameters
+  //   onClose();
+  // };
+console.log(room)
+  const handleContinue = () => {
+    // const selectedSeats = route?.seats?.map(seat => seat.seatNumber); // Extract seat numbers
+  
+    navigate("/room-booking-summary", {
+      state: {
+        
+        roomId: room?._id,
+        hotelName: room?.companyId,
+        pricePerNight: room?.pricePerNight,
+        availabilityFrom: room?.availability?.from,
+        availabilityTo: room?.availability?.to,
+        roomType: room?.type,
 
-      console.log("Booking created successfully:", response);
-      // Optionally close the modal after successful booking creation
-      onClose();
-    } catch (error) {
-      console.error("Error creating booking:", error);
-    }
+      },
+    });
   };
-
+  
   return (
-    <div
-      style={{
-        scrollbarWidth: "none" /* Firefox */,
-        msOverflowStyle: "none" /* IE 10+ */,
-      }}
-      className="fixed inset-0 opacity-1 bg-black/60 backdrop-blur-2xl flex justify-center items-center z-50 overflow-auto"
-    >
-      <div className="pt-[2rem] rounded-lg shadow-md shadow-white/50 p-6 w-[30rem] backdrop-blur-3xl bg-white/15">
-        <h2 className="text-lg font-semibold mb-4 text-white/80 text-center">
-          Room Details
-        </h2>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const data = Object.fromEntries(formData.entries());
-            console.log("Form Data:", data); // Debugging: Check the form data
-            handleSubmit(data);
-          }}
+    <>
+      <ToastContainer />
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-50">
+        <div
+          className={`absolute right-0 top-0 w-full max-w-md h-full bg-gradient-to-br from-gray-900 to-black text-white shadow-lg transform transition-transform ${
+            isOpen ? "translate-x-0" : "translate-x-full"
+          }`}
         >
-          {/* -------------------------Type---------------------------- */}
-          <div className="my-6">
-            <select
-              name="Type"
-              defaultValue={room?.type}
-              required
-              className="w-full mt-1 backdrop-blur-none bg-transparent px-4 py-1 shadow-sm shadow-white/70 text-white/80 rounded-md focus:outline-none focus:ring-2 placeholder-white/70"
-            >
-              <option value="" disabled className="text-gray-500">
-                Select Type
-              </option>
-              <option value="Single" className="text-black">
-                Single
-              </option>
-              <option value="Double" className="text-black">
-                Double
-              </option>
-              <option value="Family" className="text-black">
-                Family
-              </option>
-            </select>
-          </div>
-          {/* ------------------------Price----------------------------- */}
-          <div className="my-4">
-            <input
-              type="number"
-              name="Price"
-              defaultValue={room?.pricePerNight || ""}
-              required
-              placeholder="Price"
-              className="w-full mt-1 backdrop-blur-none bg-transparent px-4 py-1 shadow-sm shadow-white/70 text-white/80 rounded-md focus:outline-none focus:ring-2 placeholder-white/70"
-            />
-          </div>
-          {/* -----------------------From---------------------------- */}
-          <p className="text-sm text-white/80 mt-6">From</p>
-          <div className="flex gap-1 justify-between">
-            <div className="mb-4">
-              <input
-                type="date"
-                name="Fromd"
-                defaultValue={formatDate(room?.availability.from)}
-                required
-                className="w-full mt-1 backdrop-blur-none bg-transparent px-4 py-1 shadow-sm shadow-white/70 text-white/80 rounded-md focus:outline-none focus:ring-2 placeholder-white/70"
-              />
+          <div className="p-6 overflow-y-auto h-full space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold">Room Details</h2>
+              <button
+                onClick={onClose}
+                className="text-white bg-gray-800 hover:bg-gray-700 rounded-full p-2"
+              >
+                ✕
+              </button>
             </div>
-            {/* <div className="mb-4">
-              <input
-                type="time"
-                name="Fromt"
-                required
-                className="w-full mt-1 backdrop-blur-none bg-transparent px-4 py-1 shadow-sm shadow-white/70 text-white/80 rounded-md focus:outline-none focus:ring-2 placeholder-white/70"
-              />
-            </div> */}
-          </div>
 
-          {/* ---------------------------To------------------------ */}
-          <p className="text-sm text-white/80 mt-3">To</p>
-          <div className="flex gap-1 justify-between">
-            <div className="mb-4">
-              <input
-                type="date"
-                name="Tod"
-                defaultValue={formatDate(room?.availability.to)}
-                required
-                className="w-full mt-1 backdrop-blur-none bg-transparent px-4 py-1 shadow-sm shadow-white/70 text-white/80 rounded-md focus:outline-none focus:ring-2 placeholder-white/70"
-              />
+            {/* Room Information */}
+            <div className="space-y-4 bg-gray-800 p-4 rounded-lg">
+              {/* Room Type */}
+              <div className="flex items-center space-x-2">
+                <FaBed size={24} className="text-blue-500" />
+                <p className="text-sm font-semibold">
+                  <strong>Type:</strong> {room?.type || "Standard"}
+                </p>
+              </div>
+
+              {/* Availability From */}
+              <div className="flex items-center space-x-2">
+                <FaCalendarAlt size={24} className="text-green-500" />
+                <p className="text-sm">
+                  <strong>Available From:</strong> {formatDate(room?.availability?.from)}
+                </p>
+              </div>
+
+              {/* Availability To */}
+              <div className="flex items-center space-x-2">
+                <FaCalendarAlt size={24} className="text-yellow-500" />
+                <p className="text-sm">
+                  <strong>Available To:</strong> {formatDate(room?.availability?.to)}
+                </p>
+              </div>
+
+              {/* Price Per Night */}
+              <div className="flex items-center space-x-2">
+                <FaMoneyBillWave size={24} className="text-red-500" />
+                <p className="text-sm">
+                  <strong>Price Per Night:</strong> Rs. {room?.pricePerNight || "N/A"}
+                </p>
+              </div>
             </div>
-            {/* <div className="mb-4">
-              <input
-                type="time"
-                name="Tot"
-                required
-                className="w-full mt-1 backdrop-blur-none bg-transparent px-4 py-1 shadow-sm shadow-white/70 text-white/80 rounded-md focus:outline-none focus:ring-2 placeholder-white/70"
-              />
-            </div> */}
+
+            {/* Booking Button */}
+            <div className="flex justify-center">
+              <button
+                onClick={handleContinue}
+                className="px-16 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-white"
+              >
+                Book Now
+              </button>
+            </div>
           </div>
-          <div className="mb-4">
-            <input
-              type="text"
-              name="status"
-              defaultValue={room?.status || "confirmed"} // Default to 'confirmed' if no value is provided
-              required
-              placeholder="Booking Status"
-              className="w-full mt-1 backdrop-blur-none bg-transparent px-4 py-1 shadow-sm shadow-white/70 text-white/80 rounded-md focus:outline-none focus:ring-2 placeholder-white/70"
-            />
-          </div>
-          {/* ------------------------buttons----------------------- */}
-          <div className="flex justify-center gap-12 space-x-4 mt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="bg-white/20 shadow-sm border border-white/10 shadow-white/50 px-2 py-1 rounded hover:bg-gray-300 hover:text-black/80"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="bg-white/20 shadow-sm border border-white/10 shadow-white/50 text-white px-2 py-1 rounded hover:bg-gray-300 hover:text-black/80"
-            >
-              Submit
-            </button>
-          </div>
-        </form>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
